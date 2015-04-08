@@ -68,8 +68,8 @@ class Type extends FieldType {
 
         $validationErrors = array();
 
-        foreach ( $fieldSettings as $name => $value ) {
-            if ( !isset( $this->settingsSchema[$name] ) ) {
+        foreach( $fieldSettings as $name => $value ) {
+            if( !isset( $this->settingsSchema[$name] ) ) {
                 $validationErrors[] = new ValidationError(
                     "Setting '%setting%' is unknown", null, array(
                     "setting" => $name
@@ -78,9 +78,9 @@ class Type extends FieldType {
                 continue;
             }
 
-            switch ( $name ) {
+            switch( $name ) {
                 case "isMultiselect":
-                    if ( !is_bool( $value ) ) {
+                    if( !is_bool( $value ) ) {
                         $validationErrors[] = new ValidationError(
                             "Setting '%setting%' value must be a boolean", null, array(
                             "setting" => $name
@@ -89,7 +89,7 @@ class Type extends FieldType {
                     }
                     break;
                 case "delimiter":
-                    if ( !is_string( $value ) ) {
+                    if( !is_string( $value ) ) {
                         $validationErrors[] = new ValidationError(
                             "Setting '%setting%' value must be a string", null, array(
                             "setting" => $name
@@ -98,7 +98,7 @@ class Type extends FieldType {
                     }
                     break;
                 case "selectionContentTypes":
-                    if ( !is_string( $value ) ) {
+                    if( !is_string( $value ) ) {
                         $validationErrors[] = new ValidationError(
                             "Setting '%setting%' value must be a string", null, array(
                             "setting" => $name
@@ -110,7 +110,7 @@ class Type extends FieldType {
                 case "dbOptions":
                 case "options":
                 case "optionsByIdentifier":
-                    if ( !is_array( $value ) ) {
+                    if( !is_array( $value ) ) {
                         $validationErrors[] = new ValidationError(
                             "Setting '%setting%' value must be an array", null, array(
                             "setting" => $name
@@ -144,7 +144,7 @@ class Type extends FieldType {
      * @return string
      */
     public function getName( SPIValue $value ) {
-        return (string) $value->value;
+        return implode( ' ', $value->identifiers );
     }
 
     /**
@@ -165,7 +165,7 @@ class Type extends FieldType {
      * @return boolean
      */
     public function isEmptyValue( SPIValue $value ) {
-        return $value->value === null;
+        return empty( $value->identifiers );
     }
 
     /**
@@ -176,7 +176,7 @@ class Type extends FieldType {
      * @return \eZ\Publish\Core\FieldType\Integer\Value The potentially converted and structurally plausible value.
      */
     protected function createValueFromInput( $inputValue ) {
-        if ( is_int( $inputValue ) ) {
+        if( is_int( $inputValue ) ) {
             $inputValue = new Value( $inputValue );
         }
 
@@ -193,9 +193,9 @@ class Type extends FieldType {
      * @return void
      */
     protected function checkValueStructure( BaseValue $value ) {
-        if ( !is_int( $value->value ) ) {
+        if( !is_int( $value->identifiers ) ) {
             throw new InvalidArgumentType(
-            '$value->value', 'string', $value->value
+            '$value->identifiers', 'array', $value->identifiers
             );
         }
     }
@@ -208,7 +208,7 @@ class Type extends FieldType {
      * @return array
      */
     protected function getSortInfo( BaseValue $value ) {
-        return $value->value;
+        return implode( ' ', $value->identifiers );
     }
 
     /**
@@ -219,7 +219,7 @@ class Type extends FieldType {
      * @return \eZ\Publish\Core\FieldType\Integer\Value $value
      */
     public function fromHash( $hash ) {
-        if ( $hash === null ) {
+        if( $hash === null ) {
             return $this->getEmptyValue();
         }
         return new Value( $hash );
@@ -233,10 +233,10 @@ class Type extends FieldType {
      * @return mixed
      */
     public function toHash( SPIValue $value ) {
-        if ( $this->isEmptyValue( $value ) ) {
+        if( $this->isEmptyValue( $value ) ) {
             return null;
         }
-        return $value->value;
+        return $value->identifiers;
     }
 
     /**
